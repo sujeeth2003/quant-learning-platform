@@ -52,3 +52,20 @@ pre{background:var(--color-background-secondary);border:0.5px solid var(--color-
 .stat-l{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
 </style>
 
+<div class="app">
+<h2 class="sr-only">Interactive learning platform for FPGA Verilog and KDB+ Q language for quantitative trading</h2>
+
+<div id="stats" class="stat-grid">
+<div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">tasks done</div></div>
+<div class="stat"><div class="stat-n" id="s-units">0</div><div class="stat-l">units opened</div></div>
+<div class="stat"><div class="stat-n" id="s-pct">0%</div><div class="stat-l">portfolio ready</div></div>
+</div>
+
+<div class="prog-bar-wrap"><div class="prog-bar" id="prog" style="width:0%"></div></div>
+
+<div class="tabs">
+<button class="tab active" onclick="showTrack('fpga')"><i class="ti ti-cpu" aria-hidden="true"></i> FPGA / Verilog</button>
+<button class="tab" onclick="showTrack('kdb')"><i class="ti ti-database" aria-hidden="true"></i> KDB+ / Q</button>
+<button class="tab" onclick="showTrack('port')"><i class="ti ti-briefcase" aria-hidden="true"></i> Portfolio</button>
+</div>
+
