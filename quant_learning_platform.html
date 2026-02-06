@@ -69,3 +69,26 @@ pre{background:var(--color-background-secondary);border:0.5px solid var(--color-
 <button class="tab" onclick="showTrack('port')"><i class="ti ti-briefcase" aria-hidden="true"></i> Portfolio</button>
 </div>
 
+<div id="track-fpga" class="track active" id="track-fpga"></div>
+<div id="track-kdb" class="track"></div>
+<div id="track-port" class="track"></div>
+</div>
+
+<script>
+const FPGA_UNITS=[
+{title:"What is an FPGA — and why trading?",badge:"Foundation",badgeC:"#534AB7",badgeBg:"#EEEDFE",
+concept:`An FPGA (Field-Programmable Gate Array) is a chip full of logic blocks you can wire together however you want — in software, after manufacture. Unlike a CPU which runs instructions one at a time, an FPGA runs everything in parallel simultaneously. Every wire, every gate, every computation happens at the same clock tick.
+
+In trading: a CPU parsing a market data message takes ~1000 nanoseconds. The same parser in an FPGA takes ~50 nanoseconds. At HFT firms, the FPGA is placed directly on the network card so market data is parsed before it even reaches the CPU.`,
+analogy:"Think of a CPU as one brilliant chef who does every task sequentially. An FPGA is a thousand workers each doing one tiny job simultaneously — slower per worker, but the pipeline produces results far faster.",
+code:`// FPGA mental model — things happen IN PARALLEL
+// These three assignments all execute at the same clock edge:
+always @(posedge clk) begin
+  reg_a <= input_a + input_b;   // adder fires
+  reg_b <= input_c & input_d;   // AND gate fires  
+  reg_c <= ~input_e;            // inverter fires
+end
+// All three complete in ONE clock cycle simultaneously`,
+task:{title:"Task 1 — Install Vivado and simulate a 1-bit adder",steps:["Download Xilinx Vivado (free WebPACK edition) from xilinx.com","Create a new project, choose any Artix-7 device (xc7a35t)","Create a new Verilog file: module adder(input a, input b, output sum); assign sum = a ^ b; endmodule","Create a testbench: apply all four input combinations (00,01,10,11) and check outputs","Run behavioral simulation — you should see sum=0 for same inputs, sum=1 for different"],confirm:"Ask me to explain any step you get stuck on, or ask me to write the testbench for you"},
+portfolio:"Can write and simulate basic Verilog in Vivado. Understands parallel execution model."},
+
