@@ -110,3 +110,17 @@ endmodule`,
 task:{title:"Task 2 — Build a 4-bit counter",steps:["Create module counter(input clk, input rst, output reg [3:0] count)","In always @(posedge clk): if rst, set count to 0; else increment count","Write testbench: apply clock for 20 cycles, assert rst for first 2","Watch count go 0,0,1,2,3,...,15,0,1,... — it wraps at 15 (4 bits)","Try: make it count DOWN when a 'direction' input is 0"],confirm:"Show me your counter code and I will review it exactly as a quant firm engineer would"},
 portfolio:"Knows wire/reg distinction, always blocks, non-blocking assignment — core interview question at every HFT firm."},
 
+{title:"Finite State Machines — the ITCH parser heart",badge:"Key pattern",badgeC:"#993C1D",badgeBg:"#FAECE7",
+concept:`An FSM describes a system that is always in one of a finite set of states. On each clock edge, it checks the current state and the current input, then decides: stay in this state or move to another. EVERY protocol parser you will ever write in Verilog is an FSM. NASDAQ ITCH messages arrive as a stream of bytes — your FSM reads one byte per clock cycle and transitions through states until the full message is decoded.`,
+analogy:"A vending machine is an FSM. States: IDLE, COIN_INSERTED, DISPENSING. Input: coin, button press. It transitions based on what happened. Your ITCH parser is the same — states: IDLE, READING_TYPE, READING_FIELDS, OUTPUT_VALID.",
+code:`module simple_fsm(
+  input  wire clk, rst,
+  input  wire [7:0] rx_byte,
+  input  wire byte_valid,
+  output reg  msg_ready
+);
+  localparam IDLE  = 2'b00;
+  localparam TYPE  = 2'b01;
+  localparam FIELD = 2'b10;
+  localparam DONE  = 2'b11;
+  
