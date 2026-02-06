@@ -92,3 +92,21 @@ end
 task:{title:"Task 1 — Install Vivado and simulate a 1-bit adder",steps:["Download Xilinx Vivado (free WebPACK edition) from xilinx.com","Create a new project, choose any Artix-7 device (xc7a35t)","Create a new Verilog file: module adder(input a, input b, output sum); assign sum = a ^ b; endmodule","Create a testbench: apply all four input combinations (00,01,10,11) and check outputs","Run behavioral simulation — you should see sum=0 for same inputs, sum=1 for different"],confirm:"Ask me to explain any step you get stuck on, or ask me to write the testbench for you"},
 portfolio:"Can write and simulate basic Verilog in Vivado. Understands parallel execution model."},
 
+{title:"Verilog syntax: wires, registers, always blocks",badge:"Core syntax",badgeC:"#0F6E56",badgeBg:"#E1F5EE",
+concept:`Two types of signals: wire (combinational — like a physical wire, value is whatever drives it right now) and reg (sequential — holds its value until the next clock edge updates it). The always @(posedge clk) block is where sequential logic lives. It fires on every rising clock edge and updates registers.`,
+analogy:"A wire is like a live display showing whatever is happening right now. A reg is like a notebook — you write a new value in it each clock tick, and it holds that value until you write again.",
+code:`module demo(
+  input  wire       clk,
+  input  wire [7:0] data_in,   // 8-bit input
+  output reg  [7:0] data_out   // 8-bit register
+);
+  wire [7:0] doubled;
+  assign doubled = data_in << 1;  // combinational: shift left = *2
+
+  always @(posedge clk) begin     // sequential: runs each clock tick
+    data_out <= doubled;          // <= is non-blocking assignment
+  end
+endmodule`,
+task:{title:"Task 2 — Build a 4-bit counter",steps:["Create module counter(input clk, input rst, output reg [3:0] count)","In always @(posedge clk): if rst, set count to 0; else increment count","Write testbench: apply clock for 20 cycles, assert rst for first 2","Watch count go 0,0,1,2,3,...,15,0,1,... — it wraps at 15 (4 bits)","Try: make it count DOWN when a 'direction' input is 0"],confirm:"Show me your counter code and I will review it exactly as a quant firm engineer would"},
+portfolio:"Knows wire/reg distinction, always blocks, non-blocking assignment — core interview question at every HFT firm."},
+
