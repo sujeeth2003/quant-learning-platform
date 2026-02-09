@@ -124,3 +124,25 @@ code:`module simple_fsm(
   localparam FIELD = 2'b10;
   localparam DONE  = 2'b11;
   
+  reg [1:0] state;
+  reg [2:0] cnt;
+  
+  always @(posedge clk) begin
+    if (rst) begin state <= IDLE; msg_ready <= 0; end
+    else case (state)
+      IDLE:  if (byte_valid) begin state <= TYPE; end
+      TYPE:  begin
+               cnt <= 0;
+               state <= (rx_byte == 8'h41) ? FIELD : IDLE; // 0x41='A'
+             end
+      FIELD: begin
+               cnt <= cnt + 1;
+               if (cnt == 3'd7) state <= DONE;  // 8 field bytes
+             end
+      DONE:  begin msg_ready <= 1; state <= IDLE; end
+    endcase
+  end
+endmodule`,
+task:{title:"Task 3 — FSM for a 2-byte sequence detector",steps:["Build an FSM that detects the sequence 0xAB followed by 0xCD in a byte stream","States: IDLE, GOT_AB, FOUND","Output 'detected' goes high for one cycle when sequence is found","Test: send 0x00, 0xAB, 0xCD — detected should pulse","Test: send 0xAB, 0xAB, 0xCD — should still detect (second AB resets to GOT_AB)","This is exactly the pattern used to detect ITCH message start-of-frame"],confirm:"This is a classic FPGA interview question. Once you have it, ask me to walk through the full ITCH 5.0 FSM"},
+portfolio:"Can design and implement FSMs — the primary pattern for all protocol parsers. Demonstrated with a byte-sequence detector."},
+
