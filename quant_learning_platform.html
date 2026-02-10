@@ -161,3 +161,21 @@ module pipeline(input clk, input [15:0] a, b, c, output reg alert);
     // Stage 1: multiply (cycle N)
     stage1_product <= a * b;
     
+    // Stage 2: add (cycle N+1) — uses stage 1 result
+    stage2_sum <= stage1_product + c;
+    
+    // Stage 3: compare (cycle N+2) — uses stage 2 result
+    alert <= (stage2_sum > 32'h0000FFFF);
+  end
+  // Latency: 3 cycles. Throughput: 1 result/cycle after pipe is full
+endmodule`,
+task:{title:"Task 4 — Pipeline a moving sum",steps:["Build a 4-stage pipeline that computes sum of last 4 prices","Stage 1: register incoming price, Stage 2: add prev two, Stage 3: add to running total, Stage 4: output","Testbench: feed prices 10,20,30,40,50,60 and verify output","You should see: after 4 cycles of latency, output = 10+20+30+40=100, then 20+30+40+50=140, etc.","This is the hardware moving-average — used directly in EMA computation on the order book"],confirm:"Show me your pipeline code. Then ask me to show how to convert this into a hardware EMA"},
+portfolio:"Understands and implements pipelined datapath — the key technique for high-throughput signal computation in FPGA trading systems."},
+
+{title:"Fixed-point arithmetic — no floats in hardware",badge:"Critical",badgeC:"#993C1D",badgeBg:"#FAECE7",
+concept:`Floating point (like 3.14) requires large, slow hardware units. FPGAs in trading use fixed-point: represent 0.1 as the integer 1638 with an implicit denominator of 16384 (2^14). This is called Q14 format. All arithmetic is integer arithmetic — fast and small. You just have to track where the decimal point is mentally. VWAP, EMA alpha, spread — all implemented in fixed-point in hardware.`,
+analogy:"Instead of writing \$1.50, a bank internally stores 150 cents. All arithmetic is done in cents (integers). At display time they divide by 100. Fixed-point is the same idea — just powers of 2 instead of 10.",
+code:`// Q14 fixed-point: 1 unit = 1/16384
+// To represent alpha = 0.1: 0.1 * 16384 = 1638
+// To represent (1-alpha) = 0.9: 0.9 * 16384 = 14746
+
