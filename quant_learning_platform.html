@@ -146,3 +146,18 @@ endmodule`,
 task:{title:"Task 3 — FSM for a 2-byte sequence detector",steps:["Build an FSM that detects the sequence 0xAB followed by 0xCD in a byte stream","States: IDLE, GOT_AB, FOUND","Output 'detected' goes high for one cycle when sequence is found","Test: send 0x00, 0xAB, 0xCD — detected should pulse","Test: send 0xAB, 0xAB, 0xCD — should still detect (second AB resets to GOT_AB)","This is exactly the pattern used to detect ITCH message start-of-frame"],confirm:"This is a classic FPGA interview question. Once you have it, ask me to walk through the full ITCH 5.0 FSM"},
 portfolio:"Can design and implement FSMs — the primary pattern for all protocol parsers. Demonstrated with a byte-sequence detector."},
 
+{title:"Pipelining — one result every clock cycle",badge:"Performance",badgeC:"#534AB7",badgeBg:"#EEEDFE",
+concept:`Pipelining is how FPGAs achieve high throughput. Instead of waiting for a long computation to finish before starting the next one, you break it into stages. Each stage takes one clock cycle. After a latency of N cycles (to fill the pipe), you get one result per cycle regardless of how many stages there are. Trading example: ITCH decode → book update → signal compute → risk check. Each is a pipeline stage. New market data enters every cycle.`,
+analogy:"A car assembly line. Each station does one job. After the line is full, one finished car comes out every minute even though building a whole car takes 60 minutes.",
+code:`// 3-stage pipeline: multiply → add → compare
+module pipeline(input clk, input [15:0] a, b, c, output reg alert);
+  // Stage 1 registers
+  reg [31:0] stage1_product;
+  // Stage 2 registers  
+  reg [31:0] stage2_sum;
+  // Stage 3 registers (output)
+  
+  always @(posedge clk) begin
+    // Stage 1: multiply (cycle N)
+    stage1_product <= a * b;
+    
