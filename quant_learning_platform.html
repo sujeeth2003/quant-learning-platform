@@ -197,3 +197,21 @@ sim:{label:"Fixed-point EMA simulator",desc:"See how the hardware EMA tracks pri
 task:{title:"Task 5 — Implement hardware VWAP in fixed-point",steps:["VWAP = sum(price * volume) / sum(volume) over N trades","In Verilog: accumulate price*qty (Q14) and qty separately","After N=8 trades, output the ratio","Test with prices [100,102,101,103] and volumes [10,5,20,15]","Expected VWAP: (100*10 + 102*5 + 101*20 + 103*15) / (10+5+20+15) = 101.56 ticks","This is one of the most common interview problems at quant firms with FPGA roles"],confirm:"Walk me through building a hardware VWAP module — I want to see the full Verilog"},
 portfolio:"Can implement fixed-point arithmetic for financial signals. Coded EMA and VWAP in Verilog."},
 
+{title:"AXI4-Stream — connecting your modules",badge:"Interface",badgeC:"#0F6E56",badgeBg:"#E1F5EE",
+concept:`AXI4-Stream is the standard handshake interface used to connect FPGA modules. Three key signals: TVALID (source has data), TREADY (sink can accept data), TDATA (the actual data). A transfer happens only when BOTH valid and ready are high at the clock edge. Your ITCH parser produces AXI4-Stream. Your order book consumes it. Your signal module consumes the book output. This is the plumbing connecting your entire trading pipeline.`,
+analogy:"TVALID is the delivery driver arriving at your door. TREADY is you being home to accept it. The package (TDATA) only changes hands when both are true at the same moment.",
+code:`// AXI4-Stream handshake
+module axis_example(
+  input  wire        clk,
+  // Input stream (from ITCH parser)
+  input  wire        s_tvalid,
+  output wire        s_tready,
+  input  wire [63:0] s_tdata,   // decoded order book event
+  // Output stream (to signal engine)
+  output reg         m_tvalid,
+  input  wire        m_tready,
+  output reg  [31:0] m_tdata    // computed signal
+);
+  reg busy;
+  assign s_tready = ~busy;  // accept when not busy
+  
