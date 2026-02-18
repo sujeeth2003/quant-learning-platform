@@ -215,3 +215,19 @@ module axis_example(
   reg busy;
   assign s_tready = ~busy;  // accept when not busy
   
+  always @(posedge clk) begin
+    if (s_tvalid && s_tready) begin  // handshake occurred
+      busy     <= 1;
+      m_tdata  <= s_tdata[31:0] - s_tdata[63:32]; // bid-ask spread
+      m_tvalid <= 1;
+    end
+    if (m_tvalid && m_tready) begin  // downstream consumed result
+      busy     <= 0;
+      m_tvalid <= 0;
+    end
+  end
+endmodule`,
+task:{title:"Task 6 — Connect ITCH parser to order book via AXI4-Stream",steps:["Create a top-level module with three sub-modules: itch_parser, order_book, signal_engine","Connect them with AXI4-Stream buses","The parser outputs: order_id, price, qty, side, msg_type","The book consumes this and outputs: best_bid, best_ask, bid_qty, ask_qty","The signal engine computes spread and OFI from the book outputs","Simulate: inject 5 ITCH bytes into the top level, verify signal outputs"],confirm:"This is your complete trading pipeline. Ask me to review your top-level integration"},
+portfolio:"Can design and connect modular FPGA pipelines using AXI4-Stream. Built a complete market-data-to-signal pipeline."}
+];
+
