@@ -231,3 +231,17 @@ task:{title:"Task 6 — Connect ITCH parser to order book via AXI4-Stream",steps
 portfolio:"Can design and connect modular FPGA pipelines using AXI4-Stream. Built a complete market-data-to-signal pipeline."}
 ];
 
+const KDB_UNITS=[
+{title:"What is KDB+ and why does every quant firm use it?",badge:"Foundation",badgeC:"#185FA5",badgeBg:"#E6F1FB",
+concept:`KDB+ is a column-oriented in-memory database. Unlike row-oriented databases (MySQL, Postgres), KDB+ stores each column as a contiguous block in memory. For time series data — where you almost always want "give me all prices for this symbol over this time range" — this is dramatically faster. A table with 100 million rows takes seconds to query in KDB+, minutes in Postgres. Every major bank and HFT firm runs KDB+ for tick data storage and real-time analytics.`,
+analogy:"A row database is like a filing cabinet — each drawer is one record (person). To find everyone's age, you open every drawer. A column database is like a spreadsheet — the 'age' column is one contiguous strip. You read just that strip.",
+code:`/ Q language — KDB+ query language
+/ Start q: just type q in terminal after installing
+/ Everything in Q operates on vectors (lists) automatically
+
+/ Create a simple table of trades
+trades: ([] time:09:30:00 09:31:00 09:32:00;
+           sym: \`AAPL\`AAPL\`AAPL;
+           price: 150.1 150.3 150.2;
+           qty: 100 200 150)
+
