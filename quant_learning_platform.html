@@ -245,3 +245,22 @@ trades: ([] time:09:30:00 09:31:00 09:32:00;
            price: 150.1 150.3 150.2;
            qty: 100 200 150)
 
+/ Query it — SQL-like syntax
+select from trades where sym=\`AAPL
+select avg price from trades
+select sum qty by sym from trades`,
+task:{title:"Task 1 — Install KDB+ and query your first table",steps:["Download free 32-bit KDB+ from kx.com (personal use license)","Run: ./q in terminal — you get the q) prompt","Type: t:([] a:1 2 3; b:10 20 30) to create a table","Type: select from t to see it","Type: select a+b from t — notice it computed a+b for every row automatically","Type: select sum b by a from t — group and aggregate","Try: select avg b from t where a > 1"],confirm:"Show me any errors you hit — KDB+ setup trips everyone up the first time"},
+portfolio:"KDB+ installed and running. Can create tables and run basic qSQL queries."},
+
+{title:"Q is an array language — think in vectors, never loops",badge:"Core concept",badgeC:"#0F6E56",badgeBg:"#E1F5EE",
+concept:`In Python you write loops. In Q, you never write loops. Every operation on a list automatically applies to every element — this is called implicit iteration. If you catch yourself writing a loop in Q, you are doing it wrong. This is why Q is so fast — the implicit iteration compiles to tight SIMD-style vector operations over contiguous memory. The single most important mental shift in learning Q.`,
+analogy:"In Python: for price in prices: total += price. In Q: sum prices. Same result, Q version is 100x faster on a million prices because it never leaves the vector engine.",
+code:`/ Q vector operations — NO loops needed
+prices: 150.1 150.3 149.8 150.5 150.2
+
+/ All these operate on the ENTIRE list at once:
+prices * 2           / 300.2 300.6 299.6 301.0 300.4
+prices - avg prices  / demeaned prices
+prices > 150.0       / boolean mask: 1 1 0 1 1
+sum prices > 150.0   / count prices above 150: 4
+
