@@ -264,3 +264,24 @@ prices - avg prices  / demeaned prices
 prices > 150.0       / boolean mask: 1 1 0 1 1
 sum prices > 150.0   / count prices above 150: 4
 
+/ Adverbs — Q's way of applying functions
++/ 1 2 3 4 5         / over: running fold = 15 (sum)
++\ 1 2 3 4 5         / scan: running totals = 1 3 6 10 15
+1 +': 10 20 30       / each-prior: differences from previous
+
+/ This replaces ALL your loops:
+deltas prices        / differences: each price minus previous
+ratios prices        / ratios: each price / previous (returns)`,
+sim:{label:"Vector operations live demo"},
+task:{title:"Task 2 — Compute returns and rolling stats without any loops",steps:["In q: prices: 100 102 101 105 103 107 109","Compute log returns: log ratios prices — this gives ln(p_t/p_{t-1})","Compute 3-period moving average: 3 mavg prices — built-in","Compute 3-period moving std dev: 3 mdev prices","Find the index of the max price: prices?max prices","Count prices above the moving average: sum prices > 3 mavg prices","None of these use a loop — verify that you can do all 6 in one line each"],confirm:"Once you have these working, ask me to explain adverbs — they are the hardest concept in Q and the one quant interviewers test most"},
+portfolio:"Fluent in Q vector operations. Can compute returns, moving stats, and boolean filters without loops."},
+
+{title:"Tables, keyed tables, and qSQL",badge:"Data model",badgeC:"#185FA5",badgeBg:"#E6F1FB",
+concept:`A Q table is a collection of equal-length columns, where each column is a list. A keyed table is a table where one or more columns are the primary key — like a dictionary mapping key rows to value rows. qSQL looks like SQL but operates on in-memory columnar data and supports time-series-specific operations that SQL cannot. The by clause creates a grouped result. Where can use any Q expression, not just simple comparisons.`,
+analogy:"A regular table is like a spreadsheet. A keyed table is like a spreadsheet with an index column that lets you do O(1) lookup by key — like a Python dict but where each value is a whole row.",
+code:`/ Create trade and quote tables
+trades:([] time:asc 09:30:00+til 10; sym:10#\`AAPL;
+         price:150+10?2.0; qty:100*1+10?5)
+quotes:([] time:asc 09:30:00+til 20; sym:20#\`AAPL;
+         bid:149.9+20?0.2; ask:150.1+20?0.2)
+
