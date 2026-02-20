@@ -285,3 +285,25 @@ trades:([] time:asc 09:30:00+til 10; sym:10#\`AAPL;
 quotes:([] time:asc 09:30:00+til 20; sym:20#\`AAPL;
          bid:149.9+20?0.2; ask:150.1+20?0.2)
 
+/ qSQL — richer than SQL
+select time,price,qty from trades where qty>200
+select vwap:wavg[qty;price] by sym from trades
+select max price, min price, last price by sym from trades
+
+/ As-of join — THE most important KDB operation
+/ For each trade, get the last quote before that trade time:
+aj[\`sym\`time; trades; quotes]
+/ Result: trades table with bid/ask columns added
+/ This is how you analyze trade quality — was it at bid or ask?`,
+task:{title:"Task 3 — Build a quote-to-trade join and compute effective spread",steps:["Create trades and quotes tables as shown above","Run the aj join to attach quotes to trades","Add a column: side: ?[price>ask;\"buy\";\"sell\"] — direction of each trade","Compute effective spread: 2 * abs(price - (bid+ask)%2) for each trade","Compute average effective spread: avg select eff_spread from ... ","Group by hour: select avg eff_spread by 1 xbar time.minute from result","This is real market microstructure research — the kind done daily at HFT firms"],confirm:"Show me your join code — I will walk through exactly what aj is doing and how to debug it"},
+portfolio:"Can perform as-of joins to align trade and quote data. Computed effective spread — a real market microstructure metric."},
+
+{title:"KDB algorithms: VWAP, TWAP, RSI, Bollinger, MACD",badge:"Algorithms",badgeC:"#534AB7",badgeBg:"#EEEDFE",
+concept:`These algorithms exist in Q as one-line or two-line implementations. Understanding them means knowing: (1) the formula, (2) why it was invented, (3) what it signals, (4) the Q code. Every one of these comes up in quant firm interviews. Knowing the history shows you genuinely understand — not just memorized syntax.`,
+analogy:"A chef who only knows recipes but not why ingredients work together will fail when asked to adapt. Know the formula AND the intuition.",
+code:`/ VWAP — Volume Weighted Average Price (1980s institutional benchmark)
+/ "What was the average price, weighted by how much traded at each price?"
+/ Used to evaluate execution quality: did you beat VWAP?
+vwap: {wavg[x\`qty; x\`price]}  / x is a trade table partition
+select vwap:wavg[qty;price] by sym from trades
+
