@@ -307,3 +307,20 @@ code:`/ VWAP — Volume Weighted Average Price (1980s institutional benchmark)
 vwap: {wavg[x\`qty; x\`price]}  / x is a trade table partition
 select vwap:wavg[qty;price] by sym from trades
 
+/ TWAP — Time Weighted Average Price
+/ "What was the average price across equal time buckets?"
+twap:{avg select last price by 1 xbar time.second from x}
+
+/ RSI — Relative Strength Index (Wilder, 1978)
+/ "How overbought/oversold is this asset?" Range 0-100
+/ Above 70: overbought. Below 30: oversold.
+rsi:{[n;p]
+  d: deltas p;               / price changes
+  u: 0.0^d*d>0;             / up-moves (0 where negative)
+  d2: 0.0^neg d*d<0;        / down-moves (0 where positive)
+  100 - 100%1+((n mavg u)%n mavg d2)}
+
+/ Bollinger Bands (John Bollinger, 1983)
+/ "How far is price from its mean in units of standard deviation?"
+bbands:{[n;p] (n mavg p)+/:\: 0 2 -2 * n mdev p}
+
