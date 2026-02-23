@@ -324,3 +324,19 @@ rsi:{[n;p]
 / "How far is price from its mean in units of standard deviation?"
 bbands:{[n;p] (n mavg p)+/:\: 0 2 -2 * n mdev p}
 
+/ MACD (Gerald Appel, 1979)
+/ "Is the short-term trend faster or slower than the long-term trend?"
+macd:{[p]
+  fast: 12 ema p;    / 12-period EMA (short-term momentum)
+  slow: 26 ema p;    / 26-period EMA (long-term trend)
+  line: fast - slow; / positive = uptrend accelerating
+  signal: 9 ema line; / smoothed MACD
+  (line; signal; line-signal)}  / macd, signal, histogram`,
+task:{title:"Task 4 — Build a signal dashboard in Q",steps:["Generate 100 prices: prices: 100+sums -1+200?0.01","Compute: RSI(14), Bollinger(20), MACD — in Q as shown","Create a table: ([] price:prices; rsi:rsi[14;prices]; upper:first bbands[20;prices]; lower:last bbands[20;prices])","Find all times price is below lower Bollinger and RSI<30 (double confirmation buy signal)","Count how many such signals occur: sum ?[...;...;0b;()]","Compute the 5-day forward return after each signal","This is a complete signal backtest — the core task in quant research"],confirm:"Ask me to explain why RSI was invented and what edge it has — understanding the origin is what separates a quant from a programmer"},
+portfolio:"Implemented VWAP, TWAP, RSI, Bollinger Bands, MACD in Q from scratch. Ran a basic signal backtest."},
+
+{title:"Tick plant architecture: tickerplant, RDB, HDB",badge:"Architecture",badgeC:"#0F6E56",badgeBg:"#E1F5EE",
+concept:`The tick plant is the production architecture every trading firm uses. Tickerplant (TP): receives raw feed, timestamps it, and publishes to subscribers. Real-time database (RDB): subscribes to TP, holds all of today's data in memory. Historical database (HDB): at end of day, RDB data is saved to disk in a compressed columnar format. All components communicate via Q's IPC (inter-process communication) using handles. You can run this entire architecture on your laptop.`,
+code:`/ tickerplant.q — receives and distributes data
+/ Run this in one terminal: q tickerplant.q
+
