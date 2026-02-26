@@ -340,3 +340,22 @@ concept:`The tick plant is the production architecture every trading firm uses. 
 code:`/ tickerplant.q — receives and distributes data
 / Run this in one terminal: q tickerplant.q
 
+/ rdb.q — subscribes and holds intraday data
+/ Run this in another terminal: q rdb.q
+
+/ Connecting processes together:
+h: hopen \`:localhost:5010  / open handle to tickerplant
+h (set;\`trades;...)        / push data to TP
+
+/ Querying the RDB from your research process:
+rdb: hopen \`:localhost:5011
+rdb "select from trades where sym=\`AAPL"
+
+/ At end of day: save to HDB
+\`:hdb/2024.01.15/trades/ upsert trades
+/ Load historical day:
+hdb: hopen \`:localhost:5012
+hdb "select from trades where date=2024.01.15, sym=\`AAPL"`,
+task:{title:"Task 5 — Run a local tick plant and stream simulated data into it",steps:["Create tickerplant.q: starts a q process on port 5010, defines upd function","Create feedhandler.q: connects to TP, generates random OHLCV data every 100ms","Create rdb.q: subscribes to TP, accumulates data in memory","In three terminals, run all three processes","From a fourth terminal: query the RDB and watch data arrive in real time","Add a 4th process: a simple alert that prints when price moves >0.5% in 1 second","This is the exact architecture you would see at any bank or HFT fund"],confirm:"This is the most impressive portfolio piece you can build. Ask me for the complete tickerplant.q code to get started"},
+portfolio:"Built a full tick plant: tickerplant, RDB, feedhandler. Demonstrated real-time data subscription and querying."},
+
