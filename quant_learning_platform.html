@@ -397,3 +397,33 @@ const PORT_ITEMS=[
 {label:"KDB: Window join feature engineering pipeline"}
 ];
 
+function buildUnits(units, trackId) {
+  const track = document.getElementById('track-'+trackId);
+  units.forEach((u,i) => {
+    const div = document.createElement('div');
+    div.className = 'unit';
+    div.innerHTML = `<div class="unit-head" onclick="toggleUnit(this)">
+      <div class="unit-num" style="background:${u.badgeBg};color:${u.badgeC}">${i+1}</div>
+      <div class="unit-title">${u.title}</div>
+      <span class="unit-badge" style="background:${u.badgeBg};color:${u.badgeC}">${u.badge}</span>
+      <i class="ti ti-chevron-down unit-arrow" aria-hidden="true"></i>
+    </div>
+    <div class="unit-body">
+      <div class="concept">
+        <div class="concept-label">Concept</div>
+        <p>${u.concept}</p>
+        <div class="analogy"><p><strong>Analogy:</strong> ${u.analogy}</p></div>
+      </div>
+      <pre>${u.code}</pre>
+      <div class="task-box">
+        <div class="task-label"><i class="ti ti-hammer" aria-hidden="true"></i> Hands-on task: ${u.task.title}</div>
+        <ol class="task-steps">${u.task.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+        <p style="margin-top:6px;font-size:11px;color:#085041"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:12px"></i> ${u.task.confirm}</p>
+      </div>
+      ${u.portfolio ? `<div class="portfolio"><div class="portfolio-label"><i class="ti ti-briefcase" aria-hidden="true"></i> Portfolio evidence</div><ul><li>${u.portfolio}</li></ul></div>` : ''}
+      <button class="ask-btn" onclick="sendPrompt('I am working on: ${u.title.replace(/'/g,"\\'")} — help me through it step by step')"><i class="ti ti-arrow-up-right" aria-hidden="true"></i> Start this with Claude ↗</button>
+    </div>`;
+    track.appendChild(div);
+  });
+}
+
