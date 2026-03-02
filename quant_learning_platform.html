@@ -359,3 +359,25 @@ hdb "select from trades where date=2024.01.15, sym=\`AAPL"`,
 task:{title:"Task 5 — Run a local tick plant and stream simulated data into it",steps:["Create tickerplant.q: starts a q process on port 5010, defines upd function","Create feedhandler.q: connects to TP, generates random OHLCV data every 100ms","Create rdb.q: subscribes to TP, accumulates data in memory","In three terminals, run all three processes","From a fourth terminal: query the RDB and watch data arrive in real time","Add a 4th process: a simple alert that prints when price moves >0.5% in 1 second","This is the exact architecture you would see at any bank or HFT fund"],confirm:"This is the most impressive portfolio piece you can build. Ask me for the complete tickerplant.q code to get started"},
 portfolio:"Built a full tick plant: tickerplant, RDB, feedhandler. Demonstrated real-time data subscription and querying."},
 
+{title:"Window join and time-series aggregation",badge:"Advanced",badgeC:"#993C1D",badgeBg:"#FAECE7",
+concept:`wj (window join) is one of Q's most powerful operations. For each row in a table, it looks back (and optionally forward) a specified time window and computes aggregations. Example: for each trade, compute the sum of all volumes in the 1 second before that trade. This is how you compute features for ML models in tick data — order flow in a window, VWAP in a window, volatility in a window.`,
+code:`/ Window join example
+/ For each trade, get stats from quotes in the 500ms before it
+/ Window: -500ms to 0ms relative to each trade time
+
+wj[-500 0%\`second;
+   \`sym\`time;
+   trades;
+   (quotes; (avg;\`bid); (avg;\`ask); (count;\`time))]
+/ Result: each trade row gets avg_bid, avg_ask, quote_count
+/ from the 500ms before that trade
+
+/ Practical: compute order flow imbalance in 1s window
+/ OFI = (buy_volume - sell_volume) / total_volume
+ofi: {[w;t;q]
+  res: wj[-w 0; \`sym\`time; t; (q; (sum;\`qty))];
+  res}`,
+task:{title:"Task 6 — Compute order flow features for an ML model",steps:["Using your tick plant data (or simulated data), build a features table","For each trade: compute avg bid/ask in prior 500ms, total volume, trade count","Add: volatility = 1s rolling std of mid-price","Add: imbalance = (bid_qty - ask_qty) / (bid_qty + ask_qty) at time of trade","Add: target = forward 5-second return (use next trade price)","Output a clean features table ready for a linear regression","This is a real feature engineering pipeline — exactly what quant researchers at firms like Citadel build"],confirm:"Ask me to show how to run a linear regression on this table in Q and interpret the coefficients"},
+portfolio:"Built a complete feature engineering pipeline using wj (window join). Produced an ML-ready dataset from tick data."}
+];
+
