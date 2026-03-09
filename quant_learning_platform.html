@@ -457,3 +457,22 @@ function buildPortfolio() {
   track.appendChild(btn);
 }
 
+let openedUnits = new Set();
+let doneChecks = 0;
+
+function toggleUnit(head) {
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('.unit-arrow');
+  const isOpen = body.classList.toggle('open');
+  arrow.style.transform = isOpen ? 'rotate(180deg)' : '';
+  if (isOpen) { openedUnits.add(head.parentElement.id || Math.random()); updateStats(); }
+}
+
+function checkPort(i) {
+  const el = document.getElementById('pc'+i);
+  const row = document.getElementById('prow-'+i);
+  if (el.checked) { row.classList.add('done'); doneChecks++; }
+  else { row.classList.remove('done'); doneChecks--; }
+  updateStats();
+}
+
