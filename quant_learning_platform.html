@@ -476,3 +476,22 @@ function checkPort(i) {
   updateStats();
 }
 
+function updateStats() {
+  document.getElementById('s-done').textContent = doneChecks;
+  document.getElementById('s-units').textContent = openedUnits.size;
+  const pct = Math.round((doneChecks / PORT_ITEMS.length) * 100);
+  document.getElementById('s-pct').textContent = pct+'%';
+  document.getElementById('prog').style.width = pct+'%';
+}
+
+function showTrack(id) {
+  document.querySelectorAll('.track').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('track-'+id).classList.add('active');
+  event.target.closest('.tab').classList.add('active');
+}
+
+buildUnits(FPGA_UNITS, 'fpga');
+buildUnits(KDB_UNITS, 'kdb');
+buildPortfolio();
+</script>
